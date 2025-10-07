@@ -5,6 +5,10 @@
   "version": "0.1.0",
   "publisher": "SkYw0w",
   "author": "SkYw0w",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SkYw0w/1c-filebase-manager.git"
+  },
   "engines": {
     "vscode": "^1.104.0"
   },
@@ -97,19 +101,18 @@
           ],
           "default": "INFO",
           "description": "Уровень логирования"
-        },
-        "1c-filebase-manager.autoInstallDependencies": {
-          "type": "boolean",
-          "default": true,
-          "description": "Автоматически устанавливать зависимости OneScript при первом запуске"
         }
       }
     }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "compile": "npm run compile:extension && npm run compile:webview",
+    "compile:extension": "tsc -p ./",
+    "compile:webview": "tsc -p ./src/webview",
+    "watch": "npm run watch:extension & npm run watch:webview",
+    "watch:extension": "tsc -watch -p ./",
+    "watch:webview": "tsc -watch -p ./src/webview",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test"

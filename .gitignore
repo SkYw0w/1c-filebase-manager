@@ -6,3 +6,7 @@ node_modules
 logs/
 .DS_Store
 *.log
+
+# Скомпилированные файлы webview (генерируются из TypeScript)
+media/main.js
+media/main.js.map

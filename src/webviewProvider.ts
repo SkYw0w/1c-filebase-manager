@@ -404,7 +404,7 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}' 'unsafe-inline';">
     <link href="${styleUri}" rel="stylesheet">
     <title>1C FileBase Manager</title>
 </head>
@@ -417,7 +417,7 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                     <label for="baseDirectory">Каталог для создания ИБ:</label>
                     <div class="input-group">
                         <input type="text" id="baseDirectory" placeholder="C:\\1C\\Bases">
-                        <button class="btn-icon" onclick="selectDirectory('baseDirectory')">📁</button>
+                        <button class="btn-icon" id="btn-select-base-dir">📁</button>
                     </div>
                 </div>
                 <div class="setting-item">
@@ -428,18 +428,18 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                     <label for="platformVersion">Версия платформы 1С:</label>
                     <input type="text" id="platformVersion" placeholder="8.3.27.1688">
                 </div>
-                <button class="btn btn-primary" onclick="saveSettings()">Сохранить настройки</button>
+                <button class="btn btn-primary" id="btn-save-settings">Сохранить настройки</button>
             </div>
         </div>
 
         <div id="main-menu" class="panel">
             <h2>Менеджер баз 1С</h2>
             <div class="button-group">
-                <button class="btn btn-large btn-primary" onclick="showCreateBase()">
+                <button class="btn btn-large btn-primary" id="btn-create-base">
                     <span class="btn-icon">➕</span>
                     Создать новую базу
                 </button>
-                <button class="btn btn-large btn-secondary" onclick="showExistingBases()">
+                <button class="btn btn-large btn-secondary" id="btn-existing-bases">
                     <span class="btn-icon">📋</span>
                     Работать с существующими базами
                 </button>
@@ -448,7 +448,7 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
 
         <div id="create-base-panel" class="panel hidden">
             <h2>Создание новой базы</h2>
-            <button class="btn btn-back" onclick="showMainMenu()">← Назад</button>
+            <button class="btn btn-back" id="btn-back-from-create">← Назад</button>
             
             <div class="source-type-selector">
                 <label>Выберите источник:</label>
@@ -504,15 +504,15 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
 
         <div id="bases-list-panel" class="panel hidden">
             <h2>Существующие базы</h2>
-            <button class="btn btn-back" onclick="showMainMenu()">← Назад</button>
-            <button class="btn btn-secondary" onclick="refreshBases()">🔄 Обновить</button>
+            <button class="btn btn-back" id="btn-back-from-bases">← Назад</button>
+            <button class="btn btn-secondary" id="btn-refresh-bases">🔄 Обновить</button>
             
             <div id="bases-list"></div>
         </div>
 
         <div id="base-operations-panel" class="panel hidden">
             <h2 id="current-base-name"></h2>
-            <button class="btn btn-back" onclick="showExistingBases()">← Назад к списку</button>
+            <button class="btn btn-back" id="btn-back-from-operations">← Назад к списку</button>
             
             <div class="operations-grid">
                 <button class="btn btn-operation" onclick="showUpdateConfig()">

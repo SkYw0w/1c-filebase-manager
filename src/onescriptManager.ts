@@ -35,9 +35,10 @@ export class OnescriptManager {
     public async checkOnescriptInstalled(): Promise<boolean> {
         try {
             const result = await this.executeCommand('--version');
-            return result.success;
+            this.logger.debug(`OneScript проверка: success=${result.success}, exitCode=${result.exitCode}`);
+            return result.success && result.exitCode === 0;
         } catch (error) {
-            this.logger.error('OneScript не установлен или недоступен', error as Error);
+            this.logger.debug(`OneScript не найден при проверке: ${error}`);
             return false;
         }
     }
@@ -47,12 +48,9 @@ export class OnescriptManager {
         const results: { [key: string]: boolean } = {};
 
         for (const dep of dependencies) {
-            try {
-                const result = await this.executeCommand(`-check ${dep}`);
-                results[dep] = result.exitCode === 0;
-            } catch {
-                results[dep] = false;
-            }
+            const result = await this.executeCommand(`-check ${dep}`);
+            results[dep] = result.success && result.exitCode === 0;
+            this.logger.debug(`Зависимость ${dep}: ${results[dep] ? 'установлена' : 'не установлена'}`);
         }
 
         return results;
@@ -85,12 +83,16 @@ export class OnescriptManager {
     }
 
     private async executeCommand(args: string): Promise<OnescriptExecutionResult> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             const onescriptPath = this.getOnescriptPath();
             
-            this.logger.debug(`Выполнение: ${onescriptPath} ${args}`);
+            // Обрамляем путь в кавычки, если содержит пробелы
+            const quotedPath = onescriptPath.includes(' ') ? `"${onescriptPath}"` : onescriptPath;
+            const command = `${quotedPath} ${args}`;
+            
+            this.logger.debug(`Выполнение команды: ${command}`);
 
-            exec(`${onescriptPath} ${args}`, (error, stdout, stderr) => {
+            exec(command, (error, stdout, stderr) => {
                 const result: OnescriptExecutionResult = {
                     success: !error,
                     stdout: stdout.toString(),
@@ -99,20 +101,21 @@ export class OnescriptManager {
                 };
 
                 if (error) {
-                    this.logger.debug(`Ошибка выполнения: ${stderr}`);
-                    reject(result);
-                } else {
-                    resolve(result);
+                    this.logger.debug(`Ошибка выполнения: exitCode=${result.exitCode}, stderr=${stderr}`);
                 }
+                
+                // Всегда resolve, чтобы можно было проверить exitCode
+                resolve(result);
             });
         });
     }
 
     private async executeOpmCommand(args: string): Promise<OnescriptExecutionResult> {
-        return new Promise((resolve, reject) => {
-            this.logger.debug(`Выполнение: opm ${args}`);
+        return new Promise((resolve) => {
+            const command = `opm ${args}`;
+            this.logger.debug(`Выполнение команды: ${command}`);
 
-            exec(`opm ${args}`, (error, stdout, stderr) => {
+            exec(command, (error, stdout, stderr) => {
                 const result: OnescriptExecutionResult = {
                     success: !error,
                     stdout: stdout.toString(),
@@ -121,11 +124,11 @@ export class OnescriptManager {
                 };
 
                 if (error) {
-                    this.logger.debug(`Ошибка выполнения opm: ${stderr}`);
-                    reject(result);
-                } else {
-                    resolve(result);
+                    this.logger.debug(`Ошибка выполнения opm: exitCode=${result.exitCode}, stderr=${stderr}`);
                 }
+                
+                // Всегда resolve для проверки exitCode
+                resolve(result);
             });
         });
     }
@@ -134,9 +137,12 @@ export class OnescriptManager {
         const scriptPath = path.join(this.extensionPath, 'scripts', scriptName);
         const argsString = args.map(arg => `"${arg}"`).join(' ');
         
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             const onescriptPath = this.getOnescriptPath();
-            const command = `${onescriptPath} "${scriptPath}" ${argsString}`;
+            
+            // Обрамляем путь в кавычки, если содержит пробелы
+            const quotedPath = onescriptPath.includes(' ') ? `"${onescriptPath}"` : onescriptPath;
+            const command = `${quotedPath} "${scriptPath}" ${argsString}`;
             
             this.logger.debug(`Выполнение скрипта: ${command}`);
 
@@ -149,12 +155,13 @@ export class OnescriptManager {
                 };
 
                 if (error) {
-                    this.logger.error(`Ошибка выполнения скрипта ${scriptName}: ${stderr}`);
-                    reject(result);
+                    this.logger.error(`Ошибка выполнения скрипта ${scriptName}: exitCode=${result.exitCode}, stderr=${stderr}`);
                 } else {
                     this.logger.debug(`Скрипт ${scriptName} выполнен успешно`);
-                    resolve(result);
                 }
+                
+                // Всегда resolve для проверки результата
+                resolve(result);
             });
         });
     }

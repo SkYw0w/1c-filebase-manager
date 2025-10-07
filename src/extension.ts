@@ -91,42 +91,6 @@ export async function activate(context: vscode.ExtensionContext) {
         })
     );
 
-    // Проверка и автоустановка зависимостей при первом запуске
-    const config = vscode.workspace.getConfiguration('1c-filebase-manager');
-    const autoInstall = config.get<boolean>('autoInstallDependencies', true);
-
-    if (autoInstall) {
-        const installed = await onescriptManager.checkOnescriptInstalled();
-        
-        if (installed) {
-            const deps = await onescriptManager.checkDependencies();
-            const missing = Object.entries(deps)
-                .filter(([_, installed]) => !installed)
-                .map(([name, _]) => name);
-
-            if (missing.length > 0) {
-                const action = await vscode.window.showInformationMessage(
-                    `Обнаружены неустановленные зависимости: ${missing.join(', ')}. Установить автоматически?`,
-                    'Да',
-                    'Нет'
-                );
-
-                if (action === 'Да') {
-                    await vscode.commands.executeCommand('1c-filebase-manager.installDependencies');
-                }
-            }
-        } else {
-            vscode.window.showWarningMessage(
-                'OneScript не обнаружен. Установите OneScript для полной функциональности расширения.',
-                'Подробнее'
-            ).then(selection => {
-                if (selection === 'Подробнее') {
-                    vscode.env.openExternal(vscode.Uri.parse('https://oscript.io/'));
-                }
-            });
-        }
-    }
-
     logger.info('1C FileBase Manager полностью загружен');
 }
 
