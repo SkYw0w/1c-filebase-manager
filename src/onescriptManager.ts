@@ -92,7 +92,7 @@ export class OnescriptManager {
             
             this.logger.debug(`Выполнение команды: ${command}`);
 
-            exec(command, (error, stdout, stderr) => {
+            exec(command, { encoding: 'utf8' }, (error, stdout, stderr) => {
                 const result: OnescriptExecutionResult = {
                     success: !error,
                     stdout: stdout.toString(),
@@ -115,7 +115,7 @@ export class OnescriptManager {
             const command = `opm ${args}`;
             this.logger.debug(`Выполнение команды: ${command}`);
 
-            exec(command, (error, stdout, stderr) => {
+            exec(command, { encoding: 'utf8' }, (error, stdout, stderr) => {
                 const result: OnescriptExecutionResult = {
                     success: !error,
                     stdout: stdout.toString(),
@@ -142,11 +142,15 @@ export class OnescriptManager {
             
             // Обрамляем путь в кавычки, если содержит пробелы
             const quotedPath = onescriptPath.includes(' ') ? `"${onescriptPath}"` : onescriptPath;
-            const command = `${quotedPath} "${scriptPath}" ${argsString}`;
+            
+            // Для Windows устанавливаем UTF-8 кодовую страницу
+            const command = process.platform === 'win32' 
+                ? `chcp 65001 >nul && ${quotedPath} "${scriptPath}" ${argsString}`
+                : `${quotedPath} "${scriptPath}" ${argsString}`;
             
             this.logger.debug(`Выполнение скрипта: ${command}`);
 
-            exec(command, { maxBuffer: 10 * 1024 * 1024 }, (error, stdout, stderr) => {
+            exec(command, { maxBuffer: 10 * 1024 * 1024, encoding: 'utf8' }, (error, stdout, stderr) => {
                 const result: OnescriptExecutionResult = {
                     success: !error,
                     stdout: stdout.toString(),
