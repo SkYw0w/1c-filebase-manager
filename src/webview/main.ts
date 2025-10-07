@@ -42,7 +42,6 @@ window.addEventListener('load', () => {
     setupSourceTypeListeners();
     
     vscode.postMessage({ type: 'getConfig' });
-    vscode.postMessage({ type: 'getCurrentGitInfo' });
 });
 
 // Настройка обработчиков событий
@@ -59,7 +58,7 @@ function setupEventListeners(): void {
     const btnBackFromOperations = document.getElementById('btn-back-from-operations');
     const btnSelectCfFile = document.getElementById('btn-select-cf-file');
     const btnSelectSourcesDir = document.getElementById('btn-select-sources-dir');
-    const btnCreateBaseSubmit = document.getElementById('btn-create-base');
+    const btnSubmitCreateBase = document.getElementById('btn-submit-create-base');
     
     if (btnCreateBase) {
         btnCreateBase.addEventListener('click', () => {
@@ -154,14 +153,14 @@ function setupEventListeners(): void {
         console.log('✓ Обработчик для btn-select-sources-dir добавлен');
     }
     
-    if (btnCreateBaseSubmit) {
-        btnCreateBaseSubmit.addEventListener('click', () => {
+    if (btnSubmitCreateBase) {
+        btnSubmitCreateBase.addEventListener('click', () => {
             console.log('Кнопка "Создать базу" нажата!');
             createBase();
         });
-        console.log('✓ Обработчик для btn-create-base добавлен');
+        console.log('✓ Обработчик для btn-submit-create-base добавлен');
     } else {
-        console.error('✗ btn-create-base не найдена!');
+        console.error('✗ btn-submit-create-base не найдена!');
     }
 }
 
@@ -363,7 +362,7 @@ function showExistingBases(): void {
 
 function hideAllPanels(): void {
     document.querySelectorAll('.panel').forEach(panel => {
-        if (panel.id !== 'settings-panel' && panel.id !== 'logs-panel') {
+        if (panel.id !== 'settings-panel') {
             panel.classList.add('hidden');
         }
     });
@@ -558,21 +557,23 @@ function createBase(): void {
                 return;
             }
             
-            sourcePath = gitProjectSelect.value;
+            const gitRepoPath = gitProjectSelect.value;
             const projectName = gitProjectSelect.options[gitProjectSelect.selectedIndex]?.text || 'NewBase';
             const branchName = gitBranch || 'main';
             
             // Название из имени проекта + ветка
             baseName = `${projectName}_${branchName}`;
             
-            // Для git добавляем дополнительные параметры
+            // Для git:
+            // sourcePath = путь к исходникам относительно репозитория (из настроек)
+            // gitRepo = абсолютный путь к репозиторию
             const options: any = {
                 name: baseName,
                 basePath: `${currentConfig.baseDirectory}\\${baseName}`,
                 sourceType: sourceType,
-                sourcePath: sourcePath,
+                sourcePath: currentConfig.sourceDirectory, // "src/cf" из настроек
                 gitBranch: branchName,
-                gitRepo: sourcePath
+                gitRepo: gitRepoPath // путь к репозиторию
             };
             
             console.log('Отправка команды создания базы с параметрами:', options);

@@ -564,7 +564,7 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                 </div>
             </div>
 
-            <button class="btn btn-primary" id="btn-create-base">Создать базу</button>
+            <button class="btn btn-primary" id="btn-submit-create-base">Создать базу</button>
         </div>
 
         <div id="bases-list-panel" class="panel hidden">
@@ -600,14 +600,6 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                     <span class="btn-icon">⚙️</span>
                     Открыть в Конфигураторе
                 </button>
-                <button class="btn btn-operation" onclick="showBaseInfo()">
-                    <span class="btn-icon">ℹ️</span>
-                    Информация о базе
-                </button>
-                <button class="btn btn-operation" onclick="createBackupDialog()">
-                    <span class="btn-icon">💼</span>
-                    Резервная копия
-                </button>
                 <button class="btn btn-operation btn-danger" onclick="deleteBaseDialog()">
                     <span class="btn-icon">🗑️</span>
                     Удалить базу
@@ -621,11 +613,6 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                 <div class="progress-fill"></div>
             </div>
             <p id="progress-message">Пожалуйста, подождите...</p>
-        </div>
-
-        <div id="logs-panel" class="panel">
-            <h3>Логи</h3>
-            <div id="logs-content"></div>
         </div>
     </div>
 
