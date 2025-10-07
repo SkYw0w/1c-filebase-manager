@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Logger } from './logger';
 import { OnescriptManager } from './onescriptManager';
-import { InfoBase, CreateBaseOptions, UpdateBaseOptions, ExtensionOptions, DumpOptions } from './models';
+import { CreateBaseOptions, UpdateBaseOptions, ExtensionOptions, DumpOptions } from './models';
 
 export class InfobaseManager {
     private static instance: InfobaseManager;
@@ -27,13 +27,13 @@ export class InfobaseManager {
     /**
      * Получает список всех информационных баз через cpdb
      */
-    public async listInfobases(): Promise<InfoBase[]> {
+    public async listInfobases(): Promise<string[]> {
         try {
             this.logger.info('Получение списка информационных баз...');
             const result = await this.onescriptManager.executeScript('listBases.os');
             
             if (result.success && result.stdout) {
-                const bases: InfoBase[] = JSON.parse(result.stdout);
+                const bases: string[] = JSON.parse(result.stdout);
                 this.logger.info(`Найдено баз: ${bases.length}`);
                 return bases;
             }

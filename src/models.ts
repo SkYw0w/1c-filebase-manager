@@ -1,11 +1,3 @@
-export interface InfoBase {
-    name: string;
-    path: string;
-    size: number;
-    lastModified: Date;
-    guid?: string;
-}
-
 export interface CreateBaseOptions {
     name: string;
     basePath: string;

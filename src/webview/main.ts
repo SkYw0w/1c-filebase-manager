@@ -18,20 +18,13 @@ interface Config {
     platformVersion: string;
 }
 
-interface InfoBase {
-    name: string;
-    path: string;
-    size: number;
-    lastModified: string;
-}
-
 let currentConfig: Config = {
     baseDirectory: '',
     sourceDirectory: 'src/cf',
     platformVersion: '8.3.27.1688'
 };
 
-let currentBases: InfoBase[] = [];
+let currentBases: string[] = [];
 let selectedBase: string | null = null;
 
 // Инициализация при загрузке
@@ -387,9 +380,9 @@ function renderBasesList(): void {
         return;
     }
 
-    listContainer.innerHTML = currentBases.map(base => `
-        <div class="base-item" data-base-name="${escapeHtml(base.name)}">
-            <div class="base-item-name">${escapeHtml(base.name)}</div>
+    listContainer.innerHTML = currentBases.map(baseName => `
+        <div class="base-item" data-base-name="${escapeHtml(baseName)}">
+            <div class="base-item-name">${escapeHtml(baseName)}</div>
         </div>
     `).join('');
     
