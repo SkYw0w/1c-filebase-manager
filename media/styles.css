@@ -1,0 +1,408 @@
+:root {
+    --vscode-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --border-radius: 4px;
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--vscode-font-family);
+    font-size: var(--vscode-font-size);
+    color: var(--vscode-foreground);
+    background-color: var(--vscode-editor-background);
+    padding: var(--spacing-md);
+}
+
+#app {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/* Панели */
+.panel {
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background-color: var(--vscode-editor-background);
+    border: 1px solid var(--vscode-panel-border);
+    border-radius: var(--border-radius);
+}
+
+.panel.hidden {
+    display: none;
+}
+
+.panel h2 {
+    margin-bottom: var(--spacing-md);
+    color: var(--vscode-foreground);
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+.panel h3 {
+    margin-bottom: var(--spacing-sm);
+    color: var(--vscode-foreground);
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+/* Настройки */
+.settings-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.setting-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.setting-item label {
+    font-size: 0.9em;
+    color: var(--vscode-descriptionForeground);
+}
+
+/* Кнопки */
+.btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 0.95em;
+    font-family: var(--vscode-font-family);
+    transition: background-color 0.2s, transform 0.1s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-primary {
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+}
+
+.btn-primary:hover {
+    background-color: var(--vscode-button-hoverBackground);
+}
+
+.btn-secondary {
+    background-color: var(--vscode-button-secondaryBackground);
+    color: var(--vscode-button-secondaryForeground);
+}
+
+.btn-secondary:hover {
+    background-color: var(--vscode-button-secondaryHoverBackground);
+}
+
+.btn-danger {
+    background-color: #d73a4a;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #cb2431;
+}
+
+.btn-large {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: 1em;
+    width: 100%;
+}
+
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xs);
+    background-color: var(--vscode-button-secondaryBackground);
+    color: var(--vscode-button-secondaryForeground);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.btn-icon:hover {
+    background-color: var(--vscode-button-secondaryHoverBackground);
+}
+
+.btn-back {
+    background-color: transparent;
+    color: var(--vscode-foreground);
+    border: 1px solid var(--vscode-panel-border);
+    margin-bottom: var(--spacing-md);
+}
+
+.btn-back:hover {
+    background-color: var(--vscode-list-hoverBackground);
+}
+
+.btn-operation {
+    padding: var(--spacing-md);
+    text-align: left;
+    background-color: var(--vscode-button-secondaryBackground);
+    color: var(--vscode-button-secondaryForeground);
+}
+
+.btn-operation:hover {
+    background-color: var(--vscode-button-secondaryHoverBackground);
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+/* Поля ввода */
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: var(--spacing-sm);
+    border: 1px solid var(--vscode-input-border);
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+    border-radius: var(--border-radius);
+    font-family: var(--vscode-font-family);
+    font-size: 0.95em;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+    outline: none;
+    border-color: var(--vscode-focusBorder);
+}
+
+.input-group {
+    display: flex;
+    gap: var(--spacing-xs);
+    align-items: center;
+}
+
+.input-group input {
+    flex: 1;
+}
+
+/* Радио кнопки */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius);
+}
+
+.radio-label:hover {
+    background-color: var(--vscode-list-hoverBackground);
+}
+
+.radio-label input[type="radio"] {
+    cursor: pointer;
+}
+
+/* Селектор типа источника */
+.source-type-selector {
+    margin: var(--spacing-md) 0;
+}
+
+.source-type-selector label:first-child {
+    display: block;
+    margin-bottom: var(--spacing-sm);
+    font-weight: 500;
+}
+
+.source-fields {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    background-color: var(--vscode-input-background);
+    border-radius: var(--border-radius);
+}
+
+.source-fields.hidden {
+    display: none;
+}
+
+/* Список баз */
+#bases-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+}
+
+.base-item {
+    padding: var(--spacing-md);
+    background-color: var(--vscode-list-inactiveSelectionBackground);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.base-item:hover {
+    background-color: var(--vscode-list-hoverBackground);
+}
+
+.base-item-name {
+    font-weight: 600;
+    margin-bottom: var(--spacing-xs);
+}
+
+.base-item-path {
+    font-size: 0.85em;
+    color: var(--vscode-descriptionForeground);
+    margin-bottom: var(--spacing-xs);
+}
+
+.base-item-meta {
+    display: flex;
+    gap: var(--spacing-md);
+    font-size: 0.8em;
+    color: var(--vscode-descriptionForeground);
+}
+
+/* Операции с базой */
+.operations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+}
+
+/* Progress bar */
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background-color: var(--vscode-progressBar-background);
+    border-radius: 2px;
+    overflow: hidden;
+    margin: var(--spacing-md) 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--vscode-progressBar-background);
+    animation: progress-animation 1.5s infinite;
+}
+
+@keyframes progress-animation {
+    0% {
+        width: 0%;
+        margin-left: 0%;
+    }
+    50% {
+        width: 50%;
+        margin-left: 25%;
+    }
+    100% {
+        width: 0%;
+        margin-left: 100%;
+    }
+}
+
+#progress-message {
+    text-align: center;
+    color: var(--vscode-descriptionForeground);
+}
+
+/* Логи */
+#logs-panel {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#logs-content {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.85em;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    padding: var(--spacing-sm);
+    background-color: var(--vscode-terminal-background);
+    color: var(--vscode-terminal-foreground);
+    border-radius: var(--border-radius);
+}
+
+/* Скроллбары */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--vscode-scrollbarSlider-background);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--vscode-scrollbarSlider-hoverBackground);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--vscode-scrollbarSlider-activeBackground);
+}
+
+/* Адаптивность */
+@media (max-width: 600px) {
+    .operations-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.panel {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Утилиты */
+.text-center {
+    text-align: center;
+}
+
+.mt-1 { margin-top: var(--spacing-xs); }
+.mt-2 { margin-top: var(--spacing-sm); }
+.mt-3 { margin-top: var(--spacing-md); }
+.mt-4 { margin-top: var(--spacing-lg); }
+
+.mb-1 { margin-bottom: var(--spacing-xs); }
+.mb-2 { margin-bottom: var(--spacing-sm); }
+.mb-3 { margin-bottom: var(--spacing-md); }
+.mb-4 { margin-bottom: var(--spacing-lg); }
+

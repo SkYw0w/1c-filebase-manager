@@ -1,23 +1,110 @@
 {
   "name": "1c-filebase-manager",
-  "displayName": "1C_FileBase_Manager",
-  "description": "",
-  "version": "0.0.1",
+  "displayName": "1C FileBase Manager",
+  "description": "Универсальный инструмент для управления файловыми информационными базами 1С с поддержкой различных источников (Git, исходники, файлы .cf/.cfe)",
+  "version": "0.1.0",
+  "publisher": "SkYw0w",
+  "author": "SkYw0w",
   "engines": {
     "vscode": "^1.104.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "keywords": [
+    "1c",
+    "1С",
+    "infobase",
+    "информационная база",
+    "onescript",
+    "git"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "1c-filebase-manager",
+          "title": "1C FileBase Manager",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "1c-filebase-manager": [
+        {
+          "type": "webview",
+          "id": "1c-filebase-manager.mainView",
+          "name": "Менеджер баз 1С"
+        }
+      ]
+    },
     "commands": [
       {
-        "command": "1c-filebase-manager.helloWorld",
-        "title": "Hello World"
+        "command": "1c-filebase-manager.openManager",
+        "title": "Открыть 1C FileBase Manager",
+        "category": "1C"
+      },
+      {
+        "command": "1c-filebase-manager.checkDependencies",
+        "title": "Проверить зависимости",
+        "category": "1C"
+      },
+      {
+        "command": "1c-filebase-manager.installDependencies",
+        "title": "Установить зависимости OneScript",
+        "category": "1C"
+      },
+      {
+        "command": "1c-filebase-manager.refreshBases",
+        "title": "Обновить список баз",
+        "category": "1C"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "1C FileBase Manager",
+      "properties": {
+        "1c-filebase-manager.platformVersion": {
+          "type": "string",
+          "default": "8.3.27.1688",
+          "description": "Версия платформы 1С (формат: 8.3.27.1688)"
+        },
+        "1c-filebase-manager.baseDirectory": {
+          "type": "string",
+          "default": "",
+          "description": "Каталог для создания информационных баз"
+        },
+        "1c-filebase-manager.sourceDirectory": {
+          "type": "string",
+          "default": "src/cf",
+          "description": "Путь к исходникам в репозитории (по умолчанию src/cf)"
+        },
+        "1c-filebase-manager.onescriptPath": {
+          "type": "string",
+          "default": "oscript",
+          "description": "Путь к исполняемому файлу OneScript"
+        },
+        "1c-filebase-manager.logLevel": {
+          "type": "string",
+          "enum": [
+            "ERROR",
+            "WARN",
+            "INFO",
+            "DEBUG"
+          ],
+          "default": "INFO",
+          "description": "Уровень логирования"
+        },
+        "1c-filebase-manager.autoInstallDependencies": {
+          "type": "boolean",
+          "default": true,
+          "description": "Автоматически устанавливать зависимости OneScript при первом запуске"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
