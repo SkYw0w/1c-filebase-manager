@@ -39,6 +39,7 @@ window.addEventListener('load', () => {
     console.log('1C FileBase Manager: событие load сработало');
     
     setupEventListeners();
+    setupSourceTypeListeners();
     
     vscode.postMessage({ type: 'getConfig' });
     vscode.postMessage({ type: 'getCurrentGitInfo' });
@@ -56,6 +57,9 @@ function setupEventListeners(): void {
     const btnBackFromBases = document.getElementById('btn-back-from-bases');
     const btnRefreshBases = document.getElementById('btn-refresh-bases');
     const btnBackFromOperations = document.getElementById('btn-back-from-operations');
+    const btnSelectCfFile = document.getElementById('btn-select-cf-file');
+    const btnSelectSourcesDir = document.getElementById('btn-select-sources-dir');
+    const btnCreateBaseSubmit = document.getElementById('btn-create-base');
     
     if (btnCreateBase) {
         btnCreateBase.addEventListener('click', () => {
@@ -133,6 +137,108 @@ function setupEventListeners(): void {
     } else {
         console.error('✗ btn-back-from-operations не найдена!');
     }
+    
+    if (btnSelectCfFile) {
+        btnSelectCfFile.addEventListener('click', () => {
+            console.log('Выбор .cf файла');
+            vscode.postMessage({ type: 'selectFile', purpose: 'cfFile', filters: { 'Файлы конфигурации': ['cf'] } });
+        });
+        console.log('✓ Обработчик для btn-select-cf-file добавлен');
+    }
+    
+    if (btnSelectSourcesDir) {
+        btnSelectSourcesDir.addEventListener('click', () => {
+            console.log('Выбор каталога исходников');
+            vscode.postMessage({ type: 'selectDirectory', purpose: 'sourcesPath' });
+        });
+        console.log('✓ Обработчик для btn-select-sources-dir добавлен');
+    }
+    
+    if (btnCreateBaseSubmit) {
+        btnCreateBaseSubmit.addEventListener('click', () => {
+            console.log('Кнопка "Создать базу" нажата!');
+            createBase();
+        });
+        console.log('✓ Обработчик для btn-create-base добавлен');
+    } else {
+        console.error('✗ btn-create-base не найдена!');
+    }
+}
+
+// Настройка обработчиков для выбора источника базы
+function setupSourceTypeListeners(): void {
+    console.log('1C FileBase Manager: настройка обработчиков источников');
+    
+    const sourceCf = document.getElementById('source-cf') as HTMLInputElement;
+    const sourceSources = document.getElementById('source-sources') as HTMLInputElement;
+    const sourceGit = document.getElementById('source-git') as HTMLInputElement;
+    
+    if (sourceCf) {
+        sourceCf.addEventListener('change', () => {
+            console.log('Выбран источник: CF');
+            updateSourceFields('cf');
+        });
+    }
+    
+    if (sourceSources) {
+        sourceSources.addEventListener('change', () => {
+            console.log('Выбран источник: Sources');
+            updateSourceFields('sources');
+        });
+        // По умолчанию показываем поля для исходников
+        if (sourceSources.checked) {
+            updateSourceFields('sources');
+        }
+    }
+    
+    if (sourceGit) {
+        sourceGit.addEventListener('change', () => {
+            console.log('Выбран источник: Git');
+            updateSourceFields('git');
+            // Запрашиваем список проектов из workspace
+            vscode.postMessage({ type: 'getWorkspaceFolders' });
+        });
+    }
+    
+    // Обработчик выбора Git проекта
+    const gitProjectSelect = document.getElementById('gitProjectSelect') as HTMLSelectElement;
+    if (gitProjectSelect) {
+        gitProjectSelect.addEventListener('change', () => {
+            const selectedPath = gitProjectSelect.value;
+            if (selectedPath) {
+                console.log('Выбран проект:', selectedPath);
+                // Запрашиваем текущую ветку для выбранного проекта
+                vscode.postMessage({ type: 'getGitBranch', projectPath: selectedPath });
+            }
+        });
+    }
+}
+
+// Обновление видимости полей в зависимости от источника
+function updateSourceFields(sourceType: string): void {
+    console.log('updateSourceFields вызван с типом:', sourceType);
+    
+    const cfFields = document.getElementById('cf-fields');
+    const sourcesFields = document.getElementById('sources-fields');
+    const gitFields = document.getElementById('git-fields');
+    
+    // Скрываем все поля
+    if (cfFields) cfFields.classList.add('hidden');
+    if (sourcesFields) sourcesFields.classList.add('hidden');
+    if (gitFields) gitFields.classList.add('hidden');
+    
+    // Показываем нужные поля
+    switch (sourceType) {
+        case 'cf':
+            if (cfFields) cfFields.classList.remove('hidden');
+            break;
+        case 'sources':
+            if (sourcesFields) sourcesFields.classList.remove('hidden');
+            break;
+        case 'git':
+            if (gitFields) gitFields.classList.remove('hidden');
+            break;
+    }
 }
 
 // Получение сообщений от расширения
@@ -183,12 +289,14 @@ window.addEventListener('message', (event: MessageEvent) => {
             }
             break;
 
-        case 'gitInfo':
-            if (message.hasGit) {
-                const gitRepoInput = document.getElementById('gitRepo') as HTMLInputElement;
-                const gitBranchInput = document.getElementById('gitBranch') as HTMLInputElement;
-                if (gitRepoInput) gitRepoInput.value = message.repoPath || 'Текущий репозиторий';
-                if (gitBranchInput) gitBranchInput.value = message.branch || 'main';
+        case 'workspaceFolders':
+            updateWorkspaceFolders(message.folders);
+            break;
+
+        case 'gitBranch':
+            const gitBranchInput = document.getElementById('gitBranch') as HTMLInputElement;
+            if (gitBranchInput) {
+                gitBranchInput.value = message.branch || 'main';
             }
             break;
 
@@ -365,5 +473,122 @@ function selectBase(baseName: string): void {
     
     if (operationsPanel) operationsPanel.classList.remove('hidden');
     if (baseNameElem) baseNameElem.textContent = baseName;
+}
+
+// Обновление списка проектов из workspace
+function updateWorkspaceFolders(folders: Array<{name: string, path: string}>): void {
+    const gitProjectSelect = document.getElementById('gitProjectSelect') as HTMLSelectElement;
+    if (!gitProjectSelect) return;
+    
+    gitProjectSelect.innerHTML = '';
+    
+    if (folders.length === 0) {
+        gitProjectSelect.innerHTML = '<option value="">Нет открытых проектов</option>';
+        return;
+    }
+    
+    // Добавляем опции для каждого проекта
+    folders.forEach(folder => {
+        const option = document.createElement('option');
+        option.value = folder.path;
+        option.textContent = folder.name;
+        gitProjectSelect.appendChild(option);
+    });
+    
+    // Автоматически выбираем первый проект и получаем его ветку
+    if (folders.length > 0) {
+        gitProjectSelect.selectedIndex = 0;
+        vscode.postMessage({ type: 'getGitBranch', projectPath: folders[0].path });
+    }
+}
+
+// Создание базы
+function createBase(): void {
+    console.log('=== createBase ВЫЗВАН ===');
+    console.log('currentConfig:', currentConfig);
+    
+    // Проверяем настройки
+    if (!currentConfig.baseDirectory) {
+        console.error('baseDirectory не задан!');
+        alert('Укажите каталог для создания баз в настройках');
+        return;
+    }
+    
+    const sourceType = (document.querySelector('input[name="sourceType"]:checked') as HTMLInputElement)?.value;
+    console.log('Выбранный sourceType:', sourceType);
+    
+    if (!sourceType) {
+        alert('Выберите источник для создания базы');
+        return;
+    }
+    
+    let sourcePath = '';
+    let baseName = '';
+    
+    // Определяем sourcePath и генерируем название в зависимости от типа источника
+    switch (sourceType) {
+        case 'cf':
+            const cfPath = (document.getElementById('cfPath') as HTMLInputElement)?.value?.trim();
+            if (!cfPath) {
+                alert('Укажите путь к файлу .cf');
+                return;
+            }
+            sourcePath = cfPath;
+            // Название из имени файла без расширения
+            baseName = cfPath.split(/[\\\/]/).pop()?.replace(/\.cf$/i, '') || 'NewBase';
+            break;
+            
+        case 'sources':
+            const sourcesPath = (document.getElementById('sourcesPath') as HTMLInputElement)?.value?.trim();
+            if (!sourcesPath) {
+                alert('Укажите путь к каталогу исходников');
+                return;
+            }
+            sourcePath = sourcesPath;
+            // Название из имени папки
+            baseName = sourcesPath.split(/[\\\/]/).filter(x => x).pop() || 'NewBase';
+            break;
+            
+        case 'git':
+            const gitProjectSelect = document.getElementById('gitProjectSelect') as HTMLSelectElement;
+            const gitBranch = (document.getElementById('gitBranch') as HTMLInputElement)?.value?.trim();
+            
+            if (!gitProjectSelect.value) {
+                alert('Выберите проект из workspace');
+                return;
+            }
+            
+            sourcePath = gitProjectSelect.value;
+            const projectName = gitProjectSelect.options[gitProjectSelect.selectedIndex]?.text || 'NewBase';
+            const branchName = gitBranch || 'main';
+            
+            // Название из имени проекта + ветка
+            baseName = `${projectName}_${branchName}`;
+            
+            // Для git добавляем дополнительные параметры
+            const options: any = {
+                name: baseName,
+                basePath: `${currentConfig.baseDirectory}\\${baseName}`,
+                sourceType: sourceType,
+                sourcePath: sourcePath,
+                gitBranch: branchName,
+                gitRepo: sourcePath
+            };
+            
+            console.log('Отправка команды создания базы с параметрами:', options);
+            vscode.postMessage({ type: 'createBase', options: options });
+            return;
+    }
+    
+    // Для cf и sources
+    const options: any = {
+        name: baseName,
+        basePath: `${currentConfig.baseDirectory}\\${baseName}`,
+        sourceType: sourceType,
+        sourcePath: sourcePath
+    };
+    
+    console.log('Отправка команды создания базы с параметрами:', options);
+    vscode.postMessage({ type: 'createBase', options: options });
 }
 

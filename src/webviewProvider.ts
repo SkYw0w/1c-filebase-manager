@@ -110,6 +110,14 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
             case 'getCurrentGitInfo':
                 await this.getCurrentGitInfo();
                 break;
+
+            case 'getWorkspaceFolders':
+                await this.getWorkspaceFolders();
+                break;
+
+            case 'getGitBranch':
+                await this.getGitBranch(data.projectPath);
+                break;
         }
     }
 
@@ -393,6 +401,61 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
         }
     }
 
+    private async getWorkspaceFolders() {
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        
+        if (!workspaceFolders || workspaceFolders.length === 0) {
+            this._view?.webview.postMessage({
+                type: 'workspaceFolders',
+                folders: []
+            });
+            return;
+        }
+
+        const folders = workspaceFolders.map(folder => ({
+            name: folder.name,
+            path: folder.uri.fsPath
+        }));
+
+        this._view?.webview.postMessage({
+            type: 'workspaceFolders',
+            folders: folders
+        });
+    }
+
+    private async getGitBranch(projectPath: string) {
+        try {
+            const gitExtension = vscode.extensions.getExtension('vscode.git')?.exports;
+            const api = gitExtension?.getAPI(1);
+
+            if (!api) {
+                this._view?.webview.postMessage({
+                    type: 'gitBranch',
+                    branch: 'main'
+                });
+                return;
+            }
+
+            // Находим репозиторий для указанного пути
+            const repo = api.repositories.find((r: any) => 
+                r.rootUri.fsPath === projectPath
+            );
+
+            const branch = repo?.state.HEAD?.name || 'main';
+
+            this._view?.webview.postMessage({
+                type: 'gitBranch',
+                branch: branch
+            });
+        } catch (error) {
+            this.logger.error('Ошибка при получении ветки Git', error as Error);
+            this._view?.webview.postMessage({
+                type: 'gitBranch',
+                branch: 'main'
+            });
+        }
+    }
+
     private _getHtmlForWebview(webview: vscode.Webview) {
         const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'main.js'));
         const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'styles.css'));
@@ -454,15 +517,15 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                 <label>Выберите источник:</label>
                 <div class="radio-group">
                     <label class="radio-label">
-                        <input type="radio" name="sourceType" value="cf" onchange="updateSourceFields()">
+                        <input type="radio" name="sourceType" value="cf" id="source-cf">
                         Из файла конфигурации (.cf)
                     </label>
                     <label class="radio-label">
-                        <input type="radio" name="sourceType" value="sources" onchange="updateSourceFields()">
+                        <input type="radio" name="sourceType" value="sources" id="source-sources" checked>
                         Из исходников конфигурации
                     </label>
                     <label class="radio-label">
-                        <input type="radio" name="sourceType" value="git" onchange="updateSourceFields()">
+                        <input type="radio" name="sourceType" value="git" id="source-git">
                         Из Git репозитория
                     </label>
                 </div>
@@ -473,7 +536,7 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                     <label>Путь к файлу .cf:</label>
                     <div class="input-group">
                         <input type="text" id="cfPath" placeholder="C:\\path\\to\\config.cf">
-                        <button class="btn-icon" onclick="selectCfFile()">📁</button>
+                        <button class="btn-icon" id="btn-select-cf-file">📁</button>
                     </div>
                 </div>
             </div>
@@ -483,23 +546,25 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                     <label>Путь к каталогу исходников:</label>
                     <div class="input-group">
                         <input type="text" id="sourcesPath" placeholder="C:\\path\\to\\src\\cf">
-                        <button class="btn-icon" onclick="selectSourcesDir()">📁</button>
+                        <button class="btn-icon" id="btn-select-sources-dir">📁</button>
                     </div>
                 </div>
             </div>
 
             <div id="git-fields" class="source-fields hidden">
                 <div class="input-group">
-                    <label>Git репозиторий:</label>
-                    <input type="text" id="gitRepo" placeholder="Текущий репозиторий" readonly>
+                    <label>Проект из workspace:</label>
+                    <select id="gitProjectSelect">
+                        <option value="">Загрузка проектов...</option>
+                    </select>
                 </div>
                 <div class="input-group">
-                    <label>Ветка:</label>
-                    <input type="text" id="gitBranch" placeholder="main">
+                    <label>Ветка (текущая):</label>
+                    <input type="text" id="gitBranch" placeholder="main" readonly>
                 </div>
             </div>
 
-            <button class="btn btn-primary" onclick="createBase()">Создать базу</button>
+            <button class="btn btn-primary" id="btn-create-base">Создать базу</button>
         </div>
 
         <div id="bases-list-panel" class="panel hidden">

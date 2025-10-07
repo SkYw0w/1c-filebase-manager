@@ -52,11 +52,16 @@ export class InfobaseManager {
         try {
             this.logger.info(`Создание информационной базы: ${options.name}`);
 
+            // Получаем версию платформы из настроек
+            const config = vscode.workspace.getConfiguration('1c-filebase-manager');
+            const platformVersion = config.get<string>('platformVersion', '8.3.27.1688');
+
             const args = [
                 options.name,
                 options.basePath,
                 options.sourceType,
                 options.sourcePath,
+                platformVersion,
                 options.gitBranch || '',
                 options.gitRepo || ''
             ];
