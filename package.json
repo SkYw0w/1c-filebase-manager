@@ -3,14 +3,14 @@
   "displayName": "1C FileBase Manager",
   "description": "Универсальный инструмент для управления файловыми информационными базами 1С с поддержкой различных источников (Git, исходники, файлы .cf/.cfe)",
   "version": "0.1.0",
-  "publisher": "SkYw0w",
-  "author": "SkYw0w",
+  "publisher": "skywow",
+  "icon": "resources/icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/SkYw0w/1c-filebase-manager.git"
   },
   "engines": {
-    "vscode": "^1.104.0"
+    "vscode": "^1.70.0"
   },
   "categories": [
     "Other"
@@ -27,13 +27,14 @@
     "onStartupFinished"
   ],
   "main": "./out/extension.js",
+  "extensionDependencies": ["vscode.git"],
   "contributes": {
     "viewsContainers": {
       "activitybar": [
         {
           "id": "1c-filebase-manager",
           "title": "1C FileBase Manager",
-          "icon": "resources/icon.svg"
+          "icon": "resources/icon.png"
         }
       ]
     },
@@ -42,7 +43,8 @@
         {
           "type": "webview",
           "id": "1c-filebase-manager.mainView",
-          "name": "Менеджер баз 1С"
+          "name": "Менеджер баз 1С",
+          "icon": "resources/icon.png"
         }
       ]
     },
@@ -118,7 +120,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.104.0",
+    "@types/vscode": "^1.70.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
     "@typescript-eslint/eslint-plugin": "^8.45.0",
