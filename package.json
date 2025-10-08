@@ -2,7 +2,7 @@
   "name": "1c-filebase-manager",
   "displayName": "1C FileBase Manager",
   "description": "Универсальный инструмент для управления файловыми информационными базами 1С с поддержкой различных источников (Git, исходники, файлы .cf/.cfe)",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "publisher": "skywow",
   "icon": "resources/icon.png",
   "repository": {
@@ -27,7 +27,9 @@
     "onStartupFinished"
   ],
   "main": "./out/extension.js",
-  "extensionDependencies": ["vscode.git"],
+  "extensionDependencies": [
+    "vscode.git"
+  ],
   "contributes": {
     "viewsContainers": {
       "activitybar": [
