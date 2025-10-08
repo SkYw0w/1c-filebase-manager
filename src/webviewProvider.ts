@@ -145,7 +145,7 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
             await config.update(key, newConfig[key], vscode.ConfigurationTarget.Global);
         }
 
-        this.logger.info('Настройки обновлены');
+        this.logger.info('Settings updated');
         this.sendConfig();
     }
 
@@ -157,7 +157,7 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                 bases: bases
             });
         } catch (error) {
-            this.logger.error('Ошибка при получении списка баз', error as Error);
+            this.logger.error('Error getting list of infobases', error as Error);
         }
     }
 
@@ -187,7 +187,7 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                 await this.listBases();
             }
         } catch (error) {
-            this.logger.error('Ошибка при создании базы', error as Error);
+            this.logger.error('Error creating infobase', error as Error);
             this._view?.webview.postMessage({
                 type: 'operationEnd',
                 operation: 'createBase',
@@ -208,7 +208,7 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                 success: success
             });
         } catch (error) {
-            this.logger.error('Ошибка при обновлении базы', error as Error);
+            this.logger.error('Error updating infobase', error as Error);
         }
     }
 
@@ -224,7 +224,7 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                 success: success
             });
         } catch (error) {
-            this.logger.error('Ошибка при подключении расширения', error as Error);
+            this.logger.error('Error attaching extension', error as Error);
         }
     }
 
@@ -240,7 +240,7 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                 success: success
             });
         } catch (error) {
-            this.logger.error('Ошибка при выгрузке базы', error as Error);
+            this.logger.error('Error dumping infobase', error as Error);
         }
     }
 
@@ -260,7 +260,7 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                 info: info
             });
         } catch (error) {
-            this.logger.error('Ошибка при получении информации о базе', error as Error);
+            this.logger.error('Error getting infobase info', error as Error);
         }
     }
 
@@ -276,7 +276,7 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                 success: success
             });
         } catch (error) {
-            this.logger.error('Ошибка при создании резервной копии', error as Error);
+            this.logger.error('Error creating backup', error as Error);
         }
     }
 
@@ -309,7 +309,7 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                 dependencies: deps
             });
         } catch (error) {
-            this.logger.error('Ошибка при проверке зависимостей', error as Error);
+            this.logger.error('Error checking dependencies', error as Error);
         }
     }
 
@@ -329,7 +329,7 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                 await this.checkDependencies();
             }
         } catch (error) {
-            this.logger.error('Ошибка при установке зависимостей', error as Error);
+            this.logger.error('Error installing dependencies', error as Error);
         }
     }
 
@@ -417,7 +417,7 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                 });
             }
         } catch (error) {
-            this.logger.error('Ошибка при получении Git информации', error as Error);
+            this.logger.error('Error getting Git info', error as Error);
         }
     }
 
@@ -468,7 +468,7 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                 branch: branch
             });
         } catch (error) {
-            this.logger.error('Ошибка при получении ветки Git', error as Error);
+            this.logger.error('Error getting Git branch', error as Error);
             this._view?.webview.postMessage({
                 type: 'gitBranch',
                 branch: 'main'

@@ -35,10 +35,10 @@ export class OnescriptManager {
     public async checkOnescriptInstalled(): Promise<boolean> {
         try {
             const result = await this.executeCommand('--version');
-            this.logger.debug(`OneScript проверка: success=${result.success}, exitCode=${result.exitCode}`);
+            this.logger.debug(`OneScript check: success=${result.success}, exitCode=${result.exitCode}`);
             return result.success && result.exitCode === 0;
         } catch (error) {
-            this.logger.debug(`OneScript не найден при проверке: ${error}`);
+            this.logger.debug(`OneScript not found during check: ${error}`);
             return false;
         }
     }
@@ -50,7 +50,7 @@ export class OnescriptManager {
         for (const dep of dependencies) {
             const result = await this.executeCommand(`-check ${dep}`);
             results[dep] = result.success && result.exitCode === 0;
-            this.logger.debug(`Зависимость ${dep}: ${results[dep] ? 'установлена' : 'не установлена'}`);
+            this.logger.debug(`Dependency ${dep}: ${results[dep] ? 'installed' : 'not installed'}`);
         }
 
         return results;
@@ -59,26 +59,26 @@ export class OnescriptManager {
     public async installDependencies(): Promise<boolean> {
         const dependencies = ['vanessa-runner', 'cpdb', 'fs', 'ParserFileV8i', 'gitsync'];
         
-        this.logger.info('Начинается установка зависимостей OneScript...');
+        this.logger.info('Starting OneScript dependencies installation...');
 
         for (const dep of dependencies) {
             try {
-                this.logger.info(`Установка ${dep}...`);
+                this.logger.info(`Installing ${dep}...`);
                 const result = await this.executeOpmCommand(`install ${dep}`);
                 
                 if (!result.success) {
-                    this.logger.error(`Ошибка при установке ${dep}: ${result.stderr}`);
+                    this.logger.error(`Error installing ${dep}: ${result.stderr}`);
                     return false;
                 }
                 
-                this.logger.info(`${dep} успешно установлен`);
+                this.logger.info(`${dep} successfully installed`);
             } catch (error) {
-                this.logger.error(`Ошибка при установке ${dep}`, error as Error);
+                this.logger.error(`Error installing ${dep}`, error as Error);
                 return false;
             }
         }
 
-        this.logger.info('Все зависимости успешно установлены');
+        this.logger.info('All dependencies successfully installed');
         return true;
     }
 
@@ -90,7 +90,7 @@ export class OnescriptManager {
             const quotedPath = onescriptPath.includes(' ') ? `"${onescriptPath}"` : onescriptPath;
             const command = `${quotedPath} ${args}`;
             
-            this.logger.debug(`Выполнение команды: ${command}`);
+            this.logger.debug(`Executing command: ${command}`);
 
             exec(command, { encoding: 'utf8' }, (error, stdout, stderr) => {
                 const result: OnescriptExecutionResult = {
@@ -101,7 +101,7 @@ export class OnescriptManager {
                 };
 
                 if (error) {
-                    this.logger.debug(`Ошибка выполнения: exitCode=${result.exitCode}, stderr=${stderr}`);
+                    this.logger.debug(`Execution error: exitCode=${result.exitCode}, stderr=${stderr}`);
                 }
                 
                 // Всегда resolve, чтобы можно было проверить exitCode
@@ -113,7 +113,7 @@ export class OnescriptManager {
     private async executeOpmCommand(args: string): Promise<OnescriptExecutionResult> {
         return new Promise((resolve) => {
             const command = `opm ${args}`;
-            this.logger.debug(`Выполнение команды: ${command}`);
+            this.logger.debug(`Executing command: ${command}`);
 
             exec(command, { encoding: 'utf8' }, (error, stdout, stderr) => {
                 const result: OnescriptExecutionResult = {
@@ -124,7 +124,7 @@ export class OnescriptManager {
                 };
 
                 if (error) {
-                    this.logger.debug(`Ошибка выполнения opm: exitCode=${result.exitCode}, stderr=${stderr}`);
+                    this.logger.debug(`OPM execution error: exitCode=${result.exitCode}, stderr=${stderr}`);
                 }
                 
                 // Всегда resolve для проверки exitCode
@@ -148,7 +148,7 @@ export class OnescriptManager {
                 ? `chcp 65001 >nul && ${quotedPath} "${scriptPath}" ${argsString}`
                 : `${quotedPath} "${scriptPath}" ${argsString}`;
             
-            this.logger.debug(`Выполнение скрипта: ${command}`);
+            this.logger.debug(`Executing script: ${command}`);
 
             exec(command, { maxBuffer: 10 * 1024 * 1024, encoding: 'utf8' }, (error, stdout, stderr) => {
                 const result: OnescriptExecutionResult = {
@@ -159,9 +159,9 @@ export class OnescriptManager {
                 };
 
                 if (error) {
-                    this.logger.error(`Ошибка выполнения скрипта ${scriptName}: exitCode=${result.exitCode}, stderr=${stderr}`);
+                    this.logger.error(`Script execution error ${scriptName}: exitCode=${result.exitCode}, stderr=${stderr}`);
                 } else {
-                    this.logger.debug(`Скрипт ${scriptName} выполнен успешно`);
+                    this.logger.debug(`Script ${scriptName} executed successfully`);
                 }
                 
                 // Всегда resolve для проверки результата

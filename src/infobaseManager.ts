@@ -29,18 +29,18 @@ export class InfobaseManager {
      */
     public async listInfobases(): Promise<string[]> {
         try {
-            this.logger.info('Получение списка информационных баз...');
+            this.logger.info('Getting list of infobases...');
             const result = await this.onescriptManager.executeScript('listBases.os');
             
             if (result.success && result.stdout) {
                 const bases: string[] = JSON.parse(result.stdout);
-                this.logger.info(`Найдено баз: ${bases.length}`);
+                this.logger.info(`Found ${bases.length} infobases`);
                 return bases;
             }
             
             return [];
         } catch (error) {
-            this.logger.error('Ошибка при получении списка баз', error as Error);
+            this.logger.error('Error getting list of infobases', error as Error);
             return [];
         }
     }
@@ -50,7 +50,7 @@ export class InfobaseManager {
      */
     public async createInfobase(options: CreateBaseOptions): Promise<boolean> {
         try {
-            this.logger.info(`Создание информационной базы: ${options.name}`);
+            this.logger.info(`Creating infobase: ${options.name}`);
 
             // Получаем версию платформы из настроек
             const config = vscode.workspace.getConfiguration('1c-filebase-manager');
@@ -69,15 +69,15 @@ export class InfobaseManager {
             const result = await this.onescriptManager.executeScript('createBase.os', args);
 
             if (result.success) {
-                this.logger.info(`База ${options.name} успешно создана`);
+                this.logger.info(`Infobase ${options.name} successfully created`);
                 vscode.window.showInformationMessage(`База ${options.name} успешно создана`);
                 return true;
             } else {
-                this.logger.error(`Ошибка создания базы: ${result.stderr}`);
+                this.logger.error(`Infobase creation error: ${result.stderr}`);
                 return false;
             }
         } catch (error) {
-            this.logger.error('Ошибка при создании информационной базы', error as Error);
+            this.logger.error('Error creating infobase', error as Error);
             return false;
         }
     }
@@ -87,7 +87,7 @@ export class InfobaseManager {
      */
     public async updateConfiguration(options: UpdateBaseOptions): Promise<boolean> {
         try {
-            this.logger.info(`Обновление конфигурации базы: ${options.baseName}`);
+            this.logger.info(`Updating configuration: ${options.baseName}`);
 
             const config = vscode.workspace.getConfiguration('1c-filebase-manager');
             const platformVersion = config.get<string>('platformVersion', '8.3.27.1688');
@@ -102,15 +102,15 @@ export class InfobaseManager {
             const result = await this.onescriptManager.executeScript('updateBase.os', args);
 
             if (result.success) {
-                this.logger.info(`Конфигурация базы ${options.baseName} успешно обновлена`);
+                this.logger.info(`Configuration ${options.baseName} successfully updated`);
                 vscode.window.showInformationMessage(`Конфигурация обновлена`);
                 return true;
             } else {
-                this.logger.error(`Ошибка обновления: ${result.stderr}`);
+                this.logger.error(`Update error: ${result.stderr}`);
                 return false;
             }
         } catch (error) {
-            this.logger.error('Ошибка при обновлении конфигурации', error as Error);
+            this.logger.error('Error updating configuration', error as Error);
             return false;
         }
     }
@@ -120,7 +120,7 @@ export class InfobaseManager {
      */
     public async attachExtension(options: ExtensionOptions): Promise<boolean> {
         try {
-            this.logger.info(`Подключение расширения к базе: ${options.baseName}`);
+            this.logger.info(`Attaching extension to: ${options.baseName}`);
 
             const config = vscode.workspace.getConfiguration('1c-filebase-manager');
             const platformVersion = config.get<string>('platformVersion', '8.3.27.1688');
@@ -136,15 +136,15 @@ export class InfobaseManager {
             const result = await this.onescriptManager.executeScript('attachExtension.os', args);
 
             if (result.success) {
-                this.logger.info(`Расширение успешно подключено к базе ${options.baseName}`);
+                this.logger.info(`Extension successfully attached to ${options.baseName}`);
                 vscode.window.showInformationMessage(`Расширение подключено`);
                 return true;
             } else {
-                this.logger.error(`Ошибка подключения расширения: ${result.stderr}`);
+                this.logger.error(`Extension attachment error: ${result.stderr}`);
                 return false;
             }
         } catch (error) {
-            this.logger.error('Ошибка при подключении расширения', error as Error);
+            this.logger.error('Error attaching extension', error as Error);
             return false;
         }
     }
@@ -154,7 +154,7 @@ export class InfobaseManager {
      */
     public async dumpToFiles(options: DumpOptions): Promise<boolean> {
         try {
-            this.logger.info(`Выгрузка базы ${options.baseName} в ${options.dumpType}`);
+            this.logger.info(`Dumping ${options.baseName} to ${options.dumpType}`);
 
             const config = vscode.workspace.getConfiguration('1c-filebase-manager');
             const platformVersion = config.get<string>('platformVersion', '8.3.27.1688');
@@ -169,15 +169,15 @@ export class InfobaseManager {
             const result = await this.onescriptManager.executeScript('dumpBase.os', args);
 
             if (result.success) {
-                this.logger.info(`База успешно выгружена в ${options.destinationPath}`);
+                this.logger.info(`Successfully dumped to ${options.destinationPath}`);
                 vscode.window.showInformationMessage(`База выгружена успешно`);
                 return true;
             } else {
-                this.logger.error(`Ошибка выгрузки: ${result.stderr}`);
+                this.logger.error(`Dump error: ${result.stderr}`);
                 return false;
             }
         } catch (error) {
-            this.logger.error('Ошибка при выгрузке базы', error as Error);
+            this.logger.error('Error dumping infobase', error as Error);
             return false;
         }
     }
@@ -187,7 +187,7 @@ export class InfobaseManager {
      */
     public async openEnterprise(baseName: string): Promise<boolean> {
         try {
-            this.logger.info(`Открытие базы ${baseName} в 1С:Предприятие`);
+            this.logger.info(`Opening ${baseName} in 1C:Enterprise`);
             
             const config = vscode.workspace.getConfiguration('1c-filebase-manager');
             const platformVersion = config.get<string>('platformVersion', '8.3.27.1688');
@@ -199,11 +199,11 @@ export class InfobaseManager {
                 vscode.window.showInformationMessage(`База ${baseName} открыта в 1С:Предприятие`);
                 return true;
             } else {
-                this.logger.error(`Ошибка открытия в 1С:Предприятие: ${result.stderr}`);
+                this.logger.error(`Error opening in 1C:Enterprise: ${result.stderr}`);
                 return false;
             }
         } catch (error) {
-            this.logger.error('Ошибка при открытии 1С:Предприятие', error as Error);
+            this.logger.error('Error opening 1C:Enterprise', error as Error);
             return false;
         }
     }
@@ -213,7 +213,7 @@ export class InfobaseManager {
      */
     public async openDesigner(baseName: string): Promise<boolean> {
         try {
-            this.logger.info(`Открытие базы ${baseName} в Конфигураторе`);
+            this.logger.info(`Opening ${baseName} in Designer`);
             
             const config = vscode.workspace.getConfiguration('1c-filebase-manager');
             const platformVersion = config.get<string>('platformVersion', '8.3.27.1688');
@@ -225,11 +225,11 @@ export class InfobaseManager {
                 vscode.window.showInformationMessage(`База ${baseName} открыта в Конфигураторе`);
                 return true;
             } else {
-                this.logger.error(`Ошибка открытия в Конфигураторе: ${result.stderr}`);
+                this.logger.error(`Error opening in Designer: ${result.stderr}`);
                 return false;
             }
         } catch (error) {
-            this.logger.error('Ошибка при открытии Конфигуратора', error as Error);
+            this.logger.error('Error opening Designer', error as Error);
             return false;
         }
     }
@@ -239,7 +239,7 @@ export class InfobaseManager {
      */
     public async getBaseInfo(baseName: string): Promise<any> {
         try {
-            this.logger.info(`Получение информации о базе: ${baseName}`);
+            this.logger.info(`Getting infobase info: ${baseName}`);
             const result = await this.onescriptManager.executeScript('getBaseInfo.os', [baseName]);
             
             if (result.success && result.stdout) {
@@ -248,7 +248,7 @@ export class InfobaseManager {
             
             return null;
         } catch (error) {
-            this.logger.error('Ошибка при получении информации о базе', error as Error);
+            this.logger.error('Error getting infobase info', error as Error);
             return null;
         }
     }
@@ -258,18 +258,18 @@ export class InfobaseManager {
      */
     public async createBackup(baseName: string, backupPath: string): Promise<boolean> {
         try {
-            this.logger.info(`Создание резервной копии базы: ${baseName}`);
+            this.logger.info(`Creating backup: ${baseName}`);
             const result = await this.onescriptManager.executeScript('backupBase.os', [baseName, backupPath]);
             
             if (result.success) {
-                this.logger.info(`Резервная копия создана: ${backupPath}`);
+                this.logger.info(`Backup created: ${backupPath}`);
                 vscode.window.showInformationMessage(`Резервная копия создана`);
                 return true;
             }
             
             return false;
         } catch (error) {
-            this.logger.error('Ошибка при создании резервной копии', error as Error);
+            this.logger.error('Error creating backup', error as Error);
             return false;
         }
     }
@@ -289,18 +289,18 @@ export class InfobaseManager {
                 return false;
             }
 
-            this.logger.info(`Удаление базы: ${baseName}`);
+            this.logger.info(`Deleting infobase: ${baseName}`);
             const result = await this.onescriptManager.executeScript('deleteBase.os', [baseName]);
             
             if (result.success) {
-                this.logger.info(`База ${baseName} успешно удалена`);
+                this.logger.info(`Infobase ${baseName} successfully deleted`);
                 vscode.window.showInformationMessage(`База удалена`);
                 return true;
             }
             
             return false;
         } catch (error) {
-            this.logger.error('Ошибка при удалении базы', error as Error);
+            this.logger.error('Error deleting infobase', error as Error);
             return false;
         }
     }
@@ -329,7 +329,7 @@ export class InfobaseManager {
                 }
             }
         } catch (error) {
-            this.logger.debug(`Ошибка при подсчете размера директории ${dirPath}`);
+            this.logger.debug(`Error calculating directory size ${dirPath}`);
         }
 
         return totalSize;

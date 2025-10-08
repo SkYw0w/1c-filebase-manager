@@ -9,7 +9,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Инициализация логгера
     const logger = Logger.getInstance(context);
-    logger.info('1C FileBase Manager запущен');
+    logger.info('1C FileBase Manager activated');
 
     // Инициализация менеджеров
     const onescriptManager = OnescriptManager.getInstance(context);
@@ -91,10 +91,10 @@ export async function activate(context: vscode.ExtensionContext) {
         })
     );
 
-    logger.info('1C FileBase Manager полностью загружен');
+    logger.info('1C FileBase Manager fully loaded');
 }
 
 export function deactivate() {
     const logger = Logger.getInstance();
-    logger.info('1C FileBase Manager деактивирован');
+    logger.info('1C FileBase Manager deactivated');
 }
