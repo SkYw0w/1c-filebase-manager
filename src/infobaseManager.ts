@@ -89,11 +89,14 @@ export class InfobaseManager {
         try {
             this.logger.info(`Обновление конфигурации базы: ${options.baseName}`);
 
+            const config = vscode.workspace.getConfiguration('1c-filebase-manager');
+            const platformVersion = config.get<string>('platformVersion', '8.3.27.1688');
+
             const args = [
                 options.baseName,
                 options.sourceType,
                 options.sourcePath,
-                options.gitBranch || ''
+                platformVersion
             ];
 
             const result = await this.onescriptManager.executeScript('updateBase.os', args);
@@ -119,11 +122,15 @@ export class InfobaseManager {
         try {
             this.logger.info(`Подключение расширения к базе: ${options.baseName}`);
 
+            const config = vscode.workspace.getConfiguration('1c-filebase-manager');
+            const platformVersion = config.get<string>('platformVersion', '8.3.27.1688');
+
             const args = [
                 options.baseName,
                 options.sourceType,
                 options.sourcePath,
-                options.extensionName
+                options.extensionName,
+                platformVersion
             ];
 
             const result = await this.onescriptManager.executeScript('attachExtension.os', args);
@@ -149,10 +156,14 @@ export class InfobaseManager {
         try {
             this.logger.info(`Выгрузка базы ${options.baseName} в ${options.dumpType}`);
 
+            const config = vscode.workspace.getConfiguration('1c-filebase-manager');
+            const platformVersion = config.get<string>('platformVersion', '8.3.27.1688');
+
             const args = [
                 options.baseName,
                 options.dumpType,
-                options.destinationPath
+                options.destinationPath,
+                platformVersion
             ];
 
             const result = await this.onescriptManager.executeScript('dumpBase.os', args);

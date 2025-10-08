@@ -155,6 +155,238 @@ function setupEventListeners(): void {
     } else {
         console.error('✗ btn-submit-create-base не найдена!');
     }
+    
+    // Кнопки операций с базами
+    const btnUpdateConfig = document.getElementById('btn-update-config');
+    const btnAttachExtension = document.getElementById('btn-attach-extension');
+    const btnDumpOptions = document.getElementById('btn-dump-options');
+    const btnOpenEnterprise = document.getElementById('btn-open-enterprise');
+    const btnOpenDesigner = document.getElementById('btn-open-designer');
+    const btnDeleteBase = document.getElementById('btn-delete-base');
+    
+    if (btnUpdateConfig) {
+        btnUpdateConfig.addEventListener('click', () => {
+            console.log('Кнопка "Обновить конфигурацию" нажата');
+            showUpdateConfig();
+        });
+        console.log('✓ Обработчик для btn-update-config добавлен');
+    }
+    
+    if (btnAttachExtension) {
+        btnAttachExtension.addEventListener('click', () => {
+            console.log('Кнопка "Подключить расширение" нажата');
+            showAttachExtension();
+        });
+        console.log('✓ Обработчик для btn-attach-extension добавлен');
+    }
+    
+    if (btnDumpOptions) {
+        btnDumpOptions.addEventListener('click', () => {
+            console.log('Кнопка "Выгрузить" нажата');
+            showDumpOptions();
+        });
+        console.log('✓ Обработчик для btn-dump-options добавлен');
+    }
+    
+    if (btnOpenEnterprise) {
+        btnOpenEnterprise.addEventListener('click', () => {
+            console.log('Кнопка "Открыть в 1С:Предприятие" нажата');
+            openInEnterprise();
+        });
+        console.log('✓ Обработчик для btn-open-enterprise добавлен');
+    }
+    
+    if (btnOpenDesigner) {
+        btnOpenDesigner.addEventListener('click', () => {
+            console.log('Кнопка "Открыть в Конфигураторе" нажата');
+            openInDesigner();
+        });
+        console.log('✓ Обработчик для btn-open-designer добавлен');
+    }
+    
+    if (btnDeleteBase) {
+        btnDeleteBase.addEventListener('click', () => {
+            console.log('Кнопка "Удалить базу" нажата');
+            deleteBaseDialog();
+        });
+        console.log('✓ Обработчик для btn-delete-base добавлен');
+    }
+    
+    // Обработчики для форм операций
+    const btnBackFromUpdate = document.getElementById('btn-back-from-update');
+    const btnBackFromAttach = document.getElementById('btn-back-from-attach');
+    const btnBackFromDump = document.getElementById('btn-back-from-dump');
+    const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+    const btnCancelDelete = document.getElementById('btn-cancel-delete');
+    const btnSubmitUpdate = document.getElementById('btn-submit-update');
+    const btnSubmitAttach = document.getElementById('btn-submit-attach');
+    const btnSubmitDump = document.getElementById('btn-submit-dump');
+    const btnSelectUpdateSource = document.getElementById('btn-select-update-source');
+    const btnSelectExtensionSource = document.getElementById('btn-select-extension-source');
+    const btnSelectDumpDestination = document.getElementById('btn-select-dump-destination');
+    
+    if (btnBackFromUpdate) {
+        btnBackFromUpdate.addEventListener('click', () => {
+            hideAllPanels();
+            const operationsPanel = document.getElementById('base-operations-panel');
+            if (operationsPanel) operationsPanel.classList.remove('hidden');
+        });
+    }
+    
+    if (btnBackFromAttach) {
+        btnBackFromAttach.addEventListener('click', () => {
+            hideAllPanels();
+            const operationsPanel = document.getElementById('base-operations-panel');
+            if (operationsPanel) operationsPanel.classList.remove('hidden');
+        });
+    }
+    
+    if (btnBackFromDump) {
+        btnBackFromDump.addEventListener('click', () => {
+            hideAllPanels();
+            const operationsPanel = document.getElementById('base-operations-panel');
+            if (operationsPanel) operationsPanel.classList.remove('hidden');
+        });
+    }
+    
+    if (btnConfirmDelete) {
+        btnConfirmDelete.addEventListener('click', () => {
+            if (selectedBase) {
+                vscode.postMessage({ type: 'deleteBase', baseName: selectedBase });
+            }
+        });
+    }
+    
+    if (btnCancelDelete) {
+        btnCancelDelete.addEventListener('click', () => {
+            hideAllPanels();
+            const operationsPanel = document.getElementById('base-operations-panel');
+            if (operationsPanel) operationsPanel.classList.remove('hidden');
+        });
+    }
+    
+    if (btnSubmitUpdate) {
+        btnSubmitUpdate.addEventListener('click', () => {
+            console.log('=== btnSubmitUpdate НАЖАТА ===');
+            console.log('selectedBase:', selectedBase);
+            
+            if (!selectedBase) {
+                console.error('selectedBase не установлена!');
+                return;
+            }
+            
+            const sourceType = (document.getElementById('update-source-type') as HTMLSelectElement)?.value;
+            const sourcePath = (document.getElementById('update-source-path') as HTMLInputElement)?.value;
+            
+            if (!sourcePath) {
+                console.error('Путь к источнику не указан!');
+                return;
+            }
+            
+            const options = {
+                baseName: selectedBase,
+                sourceType: sourceType,
+                sourcePath: sourcePath
+            };
+            
+            console.log('Отправка updateBase с параметрами:', options);
+            vscode.postMessage({ type: 'updateBase', options: options });
+        });
+    }
+    
+    if (btnSubmitAttach) {
+        btnSubmitAttach.addEventListener('click', () => {
+            console.log('=== btnSubmitAttach НАЖАТА ===');
+            console.log('selectedBase:', selectedBase);
+            
+            if (!selectedBase) {
+                console.error('selectedBase не установлена!');
+                return;
+            }
+            
+            const extensionName = (document.getElementById('extension-name') as HTMLInputElement)?.value;
+            const sourceType = (document.getElementById('extension-source-type') as HTMLSelectElement)?.value;
+            const sourcePath = (document.getElementById('extension-source-path') as HTMLInputElement)?.value;
+            
+            if (!extensionName || !sourcePath) {
+                console.error('Не указаны имя расширения или путь к источнику!');
+                return;
+            }
+            
+            const options = {
+                baseName: selectedBase,
+                sourceType: sourceType,
+                sourcePath: sourcePath,
+                extensionName: extensionName
+            };
+            
+            console.log('Отправка attachExtension с параметрами:', options);
+            vscode.postMessage({ type: 'attachExtension', options: options });
+        });
+    }
+    
+    if (btnSubmitDump) {
+        btnSubmitDump.addEventListener('click', () => {
+            console.log('=== btnSubmitDump НАЖАТА ===');
+            console.log('selectedBase:', selectedBase);
+            
+            if (!selectedBase) {
+                console.error('selectedBase не установлена!');
+                return;
+            }
+            
+            const dumpType = (document.getElementById('dump-type') as HTMLSelectElement)?.value;
+            const destinationPath = (document.getElementById('dump-destination') as HTMLInputElement)?.value;
+            
+            if (!destinationPath) {
+                console.error('Путь для выгрузки не указан!');
+                return;
+            }
+            
+            const options = {
+                baseName: selectedBase,
+                dumpType: dumpType,
+                destinationPath: destinationPath
+            };
+            
+            console.log('Отправка dumpBase с параметрами:', options);
+            vscode.postMessage({ type: 'dumpBase', options: options });
+        });
+    }
+    
+    if (btnSelectUpdateSource) {
+        btnSelectUpdateSource.addEventListener('click', () => {
+            const sourceType = (document.getElementById('update-source-type') as HTMLSelectElement)?.value;
+            if (sourceType === 'cf') {
+                vscode.postMessage({ type: 'selectFile', purpose: 'updateSourcePath', filters: { 'Файлы конфигурации': ['cf'] } });
+            } else {
+                vscode.postMessage({ type: 'selectDirectory', purpose: 'updateSourcePath' });
+            }
+        });
+    }
+    
+    if (btnSelectExtensionSource) {
+        btnSelectExtensionSource.addEventListener('click', () => {
+            const sourceType = (document.getElementById('extension-source-type') as HTMLSelectElement)?.value;
+            if (sourceType === 'cfe') {
+                vscode.postMessage({ type: 'selectFile', purpose: 'extensionSourcePath', filters: { 'Файлы расширений': ['cfe'] } });
+            } else {
+                vscode.postMessage({ type: 'selectDirectory', purpose: 'extensionSourcePath' });
+            }
+        });
+    }
+    
+    if (btnSelectDumpDestination) {
+        btnSelectDumpDestination.addEventListener('click', () => {
+            const dumpType = (document.getElementById('dump-type') as HTMLSelectElement)?.value;
+            if (dumpType === 'cf') {
+                const defaultName = selectedBase ? `${selectedBase}.cf` : 'configuration.cf';
+                vscode.postMessage({ type: 'saveFile', purpose: 'dumpDestination', filters: { 'Файлы конфигурации': ['cf'] }, defaultName: defaultName });
+            } else {
+                vscode.postMessage({ type: 'selectDirectory', purpose: 'dumpDestination' });
+            }
+        });
+    }
 }
 
 // Настройка обработчиков для выбора источника базы
@@ -260,14 +492,25 @@ window.addEventListener('message', (event: MessageEvent) => {
             break;
 
         case 'error':
-            alert('Ошибка: ' + message.message);
             showProgress(false);
             break;
 
         case 'directorySelected':
-            const dirInput = document.getElementById(message.purpose) as HTMLInputElement;
-            if (dirInput) {
-                dirInput.value = message.path;
+            if (message.purpose === 'baseDirectory') {
+                const dirInput = document.getElementById(message.purpose) as HTMLInputElement;
+                if (dirInput) dirInput.value = message.path;
+            } else if (message.purpose === 'sourcesPath') {
+                const dirInput = document.getElementById(message.purpose) as HTMLInputElement;
+                if (dirInput) dirInput.value = message.path;
+            } else if (message.purpose === 'updateSourcePath') {
+                const dirInput = document.getElementById('update-source-path') as HTMLInputElement;
+                if (dirInput) dirInput.value = message.path;
+            } else if (message.purpose === 'extensionSourcePath') {
+                const dirInput = document.getElementById('extension-source-path') as HTMLInputElement;
+                if (dirInput) dirInput.value = message.path;
+            } else if (message.purpose === 'dumpDestination') {
+                const dirInput = document.getElementById('dump-destination') as HTMLInputElement;
+                if (dirInput) dirInput.value = message.path;
             }
             break;
 
@@ -278,6 +521,15 @@ window.addEventListener('message', (event: MessageEvent) => {
             } else if (message.purpose === 'cfeFile') {
                 const cfeInput = document.getElementById('cfePath') as HTMLInputElement;
                 if (cfeInput) cfeInput.value = message.path;
+            } else if (message.purpose === 'updateSourcePath') {
+                const updateInput = document.getElementById('update-source-path') as HTMLInputElement;
+                if (updateInput) updateInput.value = message.path;
+            } else if (message.purpose === 'extensionSourcePath') {
+                const extInput = document.getElementById('extension-source-path') as HTMLInputElement;
+                if (extInput) extInput.value = message.path;
+            } else if (message.purpose === 'dumpDestination') {
+                const dumpInput = document.getElementById('dump-destination') as HTMLInputElement;
+                if (dumpInput) dumpInput.value = message.path;
             }
             break;
 
@@ -433,27 +685,14 @@ function formatDate(dateString: string): string {
 }
 
 function showBaseInfoDialog(info: any): void {
-    if (!info) {
-        alert('Не удалось получить информацию о базе');
-        return;
-    }
-    
-    alert(`Информация о базе:\n${JSON.stringify(info, null, 2)}`);
+    // Информация выводится в логи
+    console.log('База данных:', info);
 }
 
 function showDependenciesStatus(onescriptInstalled: boolean, dependencies: Record<string, boolean>): void {
-    let message = 'Статус зависимостей:\n\n';
-    
-    if (!onescriptInstalled) {
-        message += 'OneScript: НЕ УСТАНОВЛЕН\n';
-    } else {
-        message += 'OneScript: Установлен\n\n';
-        for (const [name, installed] of Object.entries(dependencies)) {
-            message += `${name}: ${installed ? '✓' : '✗'}\n`;
-        }
-    }
-    
-    alert(message);
+    // Статус выводится в логи
+    console.log('OneScript установлен:', onescriptInstalled);
+    console.log('Зависимости:', dependencies);
 }
 
 // Функция выбора базы
@@ -584,5 +823,72 @@ function createBase(): void {
     
     console.log('Отправка команды создания базы с параметрами:', options);
     vscode.postMessage({ type: 'createBase', options: options });
+}
+
+// Функции операций с базами
+function showUpdateConfig(): void {
+    if (!selectedBase) {
+        return;
+    }
+    
+    hideAllPanels();
+    const panel = document.getElementById('update-config-panel');
+    const title = document.getElementById('update-config-title');
+    if (title) title.textContent = `Обновить конфигурацию: ${selectedBase}`;
+    if (panel) panel.classList.remove('hidden');
+}
+
+function showAttachExtension(): void {
+    if (!selectedBase) {
+        return;
+    }
+    
+    hideAllPanels();
+    const panel = document.getElementById('attach-extension-panel');
+    const title = document.getElementById('attach-extension-title');
+    if (title) title.textContent = `Подключить расширение: ${selectedBase}`;
+    if (panel) panel.classList.remove('hidden');
+}
+
+function showDumpOptions(): void {
+    if (!selectedBase) {
+        return;
+    }
+    
+    hideAllPanels();
+    const panel = document.getElementById('dump-panel');
+    const title = document.getElementById('dump-title');
+    if (title) title.textContent = `Выгрузить конфигурацию: ${selectedBase}`;
+    if (panel) panel.classList.remove('hidden');
+}
+
+function openInEnterprise(): void {
+    if (!selectedBase) {
+        return;
+    }
+    
+    vscode.postMessage({ type: 'openEnterprise', baseName: selectedBase });
+}
+
+function openInDesigner(): void {
+    if (!selectedBase) {
+        return;
+    }
+    
+    vscode.postMessage({ type: 'openDesigner', baseName: selectedBase });
+}
+
+function deleteBaseDialog(): void {
+    if (!selectedBase) {
+        return;
+    }
+    
+    hideAllPanels();
+    const panel = document.getElementById('delete-confirm-panel');
+    const message = document.getElementById('delete-confirm-message');
+    if (message) {
+        message.textContent = `Вы уверены, что хотите удалить базу "${selectedBase}"?`;
+    }
+    if (panel) panel.classList.remove('hidden');
 }
 

@@ -107,6 +107,10 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                 await this.selectFile(data.purpose, data.filters);
                 break;
 
+            case 'saveFile':
+                await this.saveFile(data.purpose, data.filters, data.defaultName);
+                break;
+
             case 'getCurrentGitInfo':
                 await this.getCurrentGitInfo();
                 break;
@@ -364,6 +368,22 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
         }
     }
 
+    private async saveFile(purpose: string, filters: any, defaultName?: string) {
+        const result = await vscode.window.showSaveDialog({
+            filters: filters,
+            defaultUri: defaultName ? vscode.Uri.file(defaultName) : undefined,
+            title: 'Сохранить файл'
+        });
+
+        if (result) {
+            this._view?.webview.postMessage({
+                type: 'fileSelected',
+                purpose: purpose,
+                path: result.fsPath
+            });
+        }
+    }
+
     private async getCurrentGitInfo() {
         try {
             const workspaceFolders = vscode.workspace.workspaceFolders;
@@ -580,30 +600,113 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
             <button class="btn btn-back" id="btn-back-from-operations">← Назад к списку</button>
             
             <div class="operations-grid">
-                <button class="btn btn-operation" onclick="showUpdateConfig()">
+                <button class="btn btn-operation" id="btn-update-config">
                     <span class="btn-icon">🔄</span>
                     Обновить конфигурацию
                 </button>
-                <button class="btn btn-operation" onclick="showAttachExtension()">
+                <button class="btn btn-operation" id="btn-attach-extension">
                     <span class="btn-icon">🧩</span>
                     Подключить расширение
                 </button>
-                <button class="btn btn-operation" onclick="showDumpOptions()">
+                <button class="btn btn-operation" id="btn-dump-options">
                     <span class="btn-icon">💾</span>
-                    Выгрузить в файлы
+                    Выгрузить
                 </button>
-                <button class="btn btn-operation" onclick="openInEnterprise()">
+                <button class="btn btn-operation" id="btn-open-enterprise">
                     <span class="btn-icon">🚀</span>
                     Открыть в 1С:Предприятие
                 </button>
-                <button class="btn btn-operation" onclick="openInDesigner()">
+                <button class="btn btn-operation" id="btn-open-designer">
                     <span class="btn-icon">⚙️</span>
                     Открыть в Конфигураторе
                 </button>
-                <button class="btn btn-operation btn-danger" onclick="deleteBaseDialog()">
+                <button class="btn btn-operation btn-danger" id="btn-delete-base">
                     <span class="btn-icon">🗑️</span>
                     Удалить базу
                 </button>
+            </div>
+        </div>
+
+        <div id="update-config-panel" class="panel hidden">
+            <h2 id="update-config-title">Обновить конфигурацию</h2>
+            <button class="btn btn-back" id="btn-back-from-update">← Назад</button>
+            
+            <div class="form-group">
+                <label>Тип источника:</label>
+                <select id="update-source-type">
+                    <option value="sources">Исходники (sources)</option>
+                    <option value="cf">Файл конфигурации (.cf)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Путь к источнику:</label>
+                <div class="input-group">
+                    <input type="text" id="update-source-path" placeholder="Путь к исходникам или .cf файлу">
+                    <button class="btn-icon" id="btn-select-update-source">📁</button>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" id="btn-submit-update">Обновить</button>
+        </div>
+
+        <div id="attach-extension-panel" class="panel hidden">
+            <h2 id="attach-extension-title">Подключить расширение</h2>
+            <button class="btn btn-back" id="btn-back-from-attach">← Назад</button>
+            
+            <div class="form-group">
+                <label>Имя расширения:</label>
+                <input type="text" id="extension-name" placeholder="Имя расширения">
+            </div>
+            
+            <div class="form-group">
+                <label>Тип источника:</label>
+                <select id="extension-source-type">
+                    <option value="sources">Исходники (sources)</option>
+                    <option value="cfe">Файл расширения (.cfe)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Путь к источнику:</label>
+                <div class="input-group">
+                    <input type="text" id="extension-source-path" placeholder="Путь к исходникам или .cfe файлу">
+                    <button class="btn-icon" id="btn-select-extension-source">📁</button>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" id="btn-submit-attach">Подключить</button>
+        </div>
+
+        <div id="dump-panel" class="panel hidden">
+            <h2 id="dump-title">Выгрузить конфигурацию</h2>
+            <button class="btn btn-back" id="btn-back-from-dump">← Назад</button>
+            
+            <div class="form-group">
+                <label>Тип выгрузки:</label>
+                <select id="dump-type">
+                    <option value="sources">В исходники (sources)</option>
+                    <option value="cf">В файл конфигурации (.cf)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Путь для выгрузки:</label>
+                <div class="input-group">
+                    <input type="text" id="dump-destination" placeholder="Путь для выгрузки">
+                    <button class="btn-icon" id="btn-select-dump-destination">📁</button>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" id="btn-submit-dump">Выгрузить</button>
+        </div>
+
+        <div id="delete-confirm-panel" class="panel hidden">
+            <h2>Удаление базы</h2>
+            <p id="delete-confirm-message">Вы уверены, что хотите удалить базу?</p>
+            <div class="button-group">
+                <button class="btn btn-danger" id="btn-confirm-delete">Да, удалить</button>
+                <button class="btn btn-secondary" id="btn-cancel-delete">Отмена</button>
             </div>
         </div>
 

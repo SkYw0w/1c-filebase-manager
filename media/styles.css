@@ -173,6 +173,20 @@ body {
     gap: var(--spacing-md);
 }
 
+/* Формы */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-md);
+}
+
+.form-group label {
+    font-size: 0.9em;
+    color: var(--vscode-descriptionForeground);
+    font-weight: 500;
+}
+
 /* Поля ввода */
 input[type="text"],
 input[type="number"],
