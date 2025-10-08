@@ -162,7 +162,6 @@ function setupEventListeners(): void {
     const btnDumpOptions = document.getElementById('btn-dump-options');
     const btnOpenEnterprise = document.getElementById('btn-open-enterprise');
     const btnOpenDesigner = document.getElementById('btn-open-designer');
-    const btnDeleteBase = document.getElementById('btn-delete-base');
     
     if (btnUpdateConfig) {
         btnUpdateConfig.addEventListener('click', () => {
@@ -204,20 +203,10 @@ function setupEventListeners(): void {
         console.log('✓ Обработчик для btn-open-designer добавлен');
     }
     
-    if (btnDeleteBase) {
-        btnDeleteBase.addEventListener('click', () => {
-            console.log('Кнопка "Удалить базу" нажата');
-            deleteBaseDialog();
-        });
-        console.log('✓ Обработчик для btn-delete-base добавлен');
-    }
-    
     // Обработчики для форм операций
     const btnBackFromUpdate = document.getElementById('btn-back-from-update');
     const btnBackFromAttach = document.getElementById('btn-back-from-attach');
     const btnBackFromDump = document.getElementById('btn-back-from-dump');
-    const btnConfirmDelete = document.getElementById('btn-confirm-delete');
-    const btnCancelDelete = document.getElementById('btn-cancel-delete');
     const btnSubmitUpdate = document.getElementById('btn-submit-update');
     const btnSubmitAttach = document.getElementById('btn-submit-attach');
     const btnSubmitDump = document.getElementById('btn-submit-dump');
@@ -243,22 +232,6 @@ function setupEventListeners(): void {
     
     if (btnBackFromDump) {
         btnBackFromDump.addEventListener('click', () => {
-            hideAllPanels();
-            const operationsPanel = document.getElementById('base-operations-panel');
-            if (operationsPanel) operationsPanel.classList.remove('hidden');
-        });
-    }
-    
-    if (btnConfirmDelete) {
-        btnConfirmDelete.addEventListener('click', () => {
-            if (selectedBase) {
-                vscode.postMessage({ type: 'deleteBase', baseName: selectedBase });
-            }
-        });
-    }
-    
-    if (btnCancelDelete) {
-        btnCancelDelete.addEventListener('click', () => {
             hideAllPanels();
             const operationsPanel = document.getElementById('base-operations-panel');
             if (operationsPanel) operationsPanel.classList.remove('hidden');
@@ -877,18 +850,3 @@ function openInDesigner(): void {
     
     vscode.postMessage({ type: 'openDesigner', baseName: selectedBase });
 }
-
-function deleteBaseDialog(): void {
-    if (!selectedBase) {
-        return;
-    }
-    
-    hideAllPanels();
-    const panel = document.getElementById('delete-confirm-panel');
-    const message = document.getElementById('delete-confirm-message');
-    if (message) {
-        message.textContent = `Вы уверены, что хотите удалить базу "${selectedBase}"?`;
-    }
-    if (panel) panel.classList.remove('hidden');
-}
-

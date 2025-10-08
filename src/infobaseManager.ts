@@ -188,8 +188,20 @@ export class InfobaseManager {
     public async openEnterprise(baseName: string): Promise<boolean> {
         try {
             this.logger.info(`Открытие базы ${baseName} в 1С:Предприятие`);
-            const result = await this.onescriptManager.executeScript('openEnterprise.os', [baseName]);
-            return result.success;
+            
+            const config = vscode.workspace.getConfiguration('1c-filebase-manager');
+            const platformVersion = config.get<string>('platformVersion', '8.3.27.1688');
+            
+            const args = [baseName, platformVersion];
+            const result = await this.onescriptManager.executeScript('openEnterprise.os', args);
+            
+            if (result.success) {
+                vscode.window.showInformationMessage(`База ${baseName} открыта в 1С:Предприятие`);
+                return true;
+            } else {
+                this.logger.error(`Ошибка открытия в 1С:Предприятие: ${result.stderr}`);
+                return false;
+            }
         } catch (error) {
             this.logger.error('Ошибка при открытии 1С:Предприятие', error as Error);
             return false;
@@ -202,8 +214,20 @@ export class InfobaseManager {
     public async openDesigner(baseName: string): Promise<boolean> {
         try {
             this.logger.info(`Открытие базы ${baseName} в Конфигураторе`);
-            const result = await this.onescriptManager.executeScript('openDesigner.os', [baseName]);
-            return result.success;
+            
+            const config = vscode.workspace.getConfiguration('1c-filebase-manager');
+            const platformVersion = config.get<string>('platformVersion', '8.3.27.1688');
+            
+            const args = [baseName, platformVersion];
+            const result = await this.onescriptManager.executeScript('openDesigner.os', args);
+            
+            if (result.success) {
+                vscode.window.showInformationMessage(`База ${baseName} открыта в Конфигураторе`);
+                return true;
+            } else {
+                this.logger.error(`Ошибка открытия в Конфигураторе: ${result.stderr}`);
+                return false;
+            }
         } catch (error) {
             this.logger.error('Ошибка при открытии Конфигуратора', error as Error);
             return false;

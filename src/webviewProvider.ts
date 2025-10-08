@@ -620,10 +620,6 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
                     <span class="btn-icon">⚙️</span>
                     Открыть в Конфигураторе
                 </button>
-                <button class="btn btn-operation btn-danger" id="btn-delete-base">
-                    <span class="btn-icon">🗑️</span>
-                    Удалить базу
-                </button>
             </div>
         </div>
 
@@ -699,15 +695,6 @@ export class FilebaseManagerViewProvider implements vscode.WebviewViewProvider {
             </div>
             
             <button class="btn btn-primary" id="btn-submit-dump">Выгрузить</button>
-        </div>
-
-        <div id="delete-confirm-panel" class="panel hidden">
-            <h2>Удаление базы</h2>
-            <p id="delete-confirm-message">Вы уверены, что хотите удалить базу?</p>
-            <div class="button-group">
-                <button class="btn btn-danger" id="btn-confirm-delete">Да, удалить</button>
-                <button class="btn btn-secondary" id="btn-cancel-delete">Отмена</button>
-            </div>
         </div>
 
         <div id="progress-panel" class="panel hidden">
